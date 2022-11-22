@@ -1,8 +1,8 @@
 # NOTE
 
-The code cleanup isn't over yet.
+## The code cleanup isn't over yet.
 
-Our code has been modified in baseline_UNET3D.py so if you want to preview it, take a look there.
+## Our code has been modified in baseline_UNET3D.py so if you want to preview it, take a look there.
 
 
 ![Title](/images/weather4cast_v1000-26.png?raw=true "Weather4cast competition")
