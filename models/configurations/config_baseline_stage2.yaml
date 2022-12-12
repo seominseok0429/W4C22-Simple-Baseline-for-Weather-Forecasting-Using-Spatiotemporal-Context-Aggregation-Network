@@ -2,14 +2,14 @@ experiment:  # Settings for the current experiment
   name: 'U-NET-252'  # name of the current experiment for logging
   experiment_folder: 'lightning_logs/'  # folder to save logs 
   sub_folder: 'baseline'  # logging sub-folder
-  precision: 16  # bit precision of weights. 32 or 16 
+  precision: 32  # bit precision of weights. 32 or 16 
   logging: True  # Toggle logging on/off
 dataset: 
   # Available bands: 'IR_016', 'IR_039', 'IR_087', 'IR_097', 'IR_108', 'IR_120', 'IR_134', 'VIS006', 'VIS008', 'WV_062', 'WV_073'
   sat_bands: ['IR_016', 'IR_039', 'IR_087', 'IR_097', 'IR_108', 'IR_120', 'IR_134', 'VIS006', 'VIS008', 'WV_062', 'WV_073']
 #   regions: [ 'boxi_0015', 'boxi_0034', 'boxi_0076' ]  # stage-1
-  regions: [ 'boxi_0015'] #, 'boxi_0034', 'boxi_0076',
-  #             'roxi_0004', 'roxi_0005', 'roxi_0006', 'roxi_0007' ]  # stage-2
+  regions: [ 'boxi_0015', 'boxi_0034', 'boxi_0076',
+             'roxi_0004', 'roxi_0005', 'roxi_0006', 'roxi_0007' ]  # stage-2
   # or, e.g., ['boxi_0015'] if you want to train your model for one region only
   input_product: REFL-BT 
   output_product: RATE 
@@ -22,8 +22,8 @@ dataset:
   len_seq_predict: 32  # output slots; both still hard-coded in places!
 #   data_root:  'data/2019'  # stage-1
   data_root:  'data'
-  #  years:  [ '2019', '2020' ]  # stage-2
-  years:  [ '2020' ]  # stage-1
+  years:  [ '2019', '2020' ]  # stage-2
+#   years:  [ '2019' ]  # stage-1
 #   splits_path: 'data/timestamps_and_splits_2019.csv'  # stage-1
   splits_path: 'data/timestamps_and_splits_stage2.csv'  # stage-2
   
@@ -33,7 +33,7 @@ dataset:
     RATE:
       rainfall_rate-500X500: 
         mask: [-9999000.0, inf, nan, max128] #, 0range0.1] # Mostly used for loss function: values added here are added to a mask and not used for loss 
-        #map: [[lessthan0.0, 0], [greaterthan0.0, 1], [-8888000.0, 0], [-9999000.0, 0], [inf, 0], [nan, 0]]   #Mostly used for input preprocessing   # 1. map values   # stage-1
+#         map: [[lessthan0.0, 0], [greaterthan0.0, 1], [-8888000.0, 0], [-9999000.0, 0], [inf, 0], [nan, 0]]   #Mostly used for input preprocessing   # 1. map values   # stage-1
         map: [[lessthan0.2, 0], [greaterthan0.2, 1], [0.2,1], [-8888000.0, 0], [-9999000.0, 0], [inf, 0], [nan, 0]]   #Mostly used for input preprocessing   # 1. map values   # stage-2
 #        mean_std: [0.07165331, 0.6302647]
         range: [0, 128]          # 2. we evaluate only pixels in this range
@@ -109,16 +109,17 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 16  # 16
+  batch_size: 40  # 16
   max_epochs: 90
-  n_workers: 1  # 8
+  n_workers: 16  # 8
   loss: BCEWithLogitsLoss # requires pos_weight to be set
   pos_weight: 2.577389  # stage-2: 2.577389 inverse unmasked rain ratio;  13.32784 inverse rain ratio. Only used for BCEWithLogitsLoss
+#  loss: mIoULoss
   early_stopping: True
   patience: 20
-  lr: 1e-5
-  weight_decay: 0.1
-  init_filter_size: 64
+  lr: 1e-4
+  weight_decay: 2e-2 
+  init_filter_size: 32
   dropout_rate: 0.4
 
 model:    # model definition settings

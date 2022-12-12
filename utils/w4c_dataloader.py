@@ -170,6 +170,39 @@ class RainData(Dataset):
         if VERBOSE:
             print(time.time() - t1, "out sequence")
         return output_data, metadata
+    
+    def PolicyAug(self, input_data, output_data, metadata, p=0.8):
+        p_value = np.random.rand()
+        policy = ['rot90', 'rot270', 'rot180_hflip', 'rot270_hflip', 'hglip']
+        if p_value < p:
+            rotate_num = np.random.randint(5)
+            if policy[rotate_num] == 'rot90':
+                input_data = np.rot90(input_data, 1, (2,3)).copy()
+                output_data = np.rot90(output_data, 1, (2,3)).copy()
+                metadata['target']['mask'] = np.rot90(metadata['target']['mask'], 1, (2,3)).copy()
+            elif policy[rotate_num] == 'rot270':
+                input_data = np.rot90(input_data, 3, (2,3)).copy()
+                output_data = np.rot90(output_data, 3, (2,3)).copy()
+                metadata['target']['mask'] = np.rot90(metadata['target']['mask'], 3, (2,3)).copy()
+            elif policy[rotate_num] == 'rot180_hflip':
+                input_data = np.rot90(input_data, 2, (2,3)).copy()
+                output_data = np.rot90(output_data, 2, (2,3)).copy()
+                metadata['target']['mask'] = np.rot90(metadata['target']['mask'], 2, (2,3)).copy()
+                input_data = input_data[:,:,::-1,:].copy()
+                output_data = output_data[:,:,::-1,:].copy()
+                metadata['target']['mask'] = metadata['target']['mask'][:,:,::-1,:].copy()       
+            elif policy[rotate_num] == 'rot270_hflip':
+                input_data = np.rot90(input_data, 3, (2,3)).copy()
+                output_data = np.rot90(output_data, 3, (2,3)).copy()
+                metadata['target']['mask'] = np.rot90(metadata['target']['mask'], 3, (2,3)).copy()
+                input_data = input_data[:,:,::-1,:].copy()
+                output_data = output_data[:,:,::-1,:].copy()
+                metadata['target']['mask'] = metadata['target']['mask'][:,:,::-1,:].copy()
+            else:
+                input_data = input_data[:,:,::-1,:].copy()
+                output_data = output_data[:,:,::-1,:].copy()
+                metadata['target']['mask'] = metadata['target']['mask'][:,:,::-1,:].copy()
+        return input_data, output_data, metadata
 
     def RandomRotate90(self, input_data, output_data, metadata, p=0.5): # need to fix
         p_value = np.random.rand()
@@ -219,20 +252,18 @@ class RainData(Dataset):
         return input_data, output_data, metadata
 
     def load_in_out(self, in_seq, out_seq=None, seq_r=None):
-        metadata = {'input': {'mask': [], 'timestamps': in_seq},
-                    'target': {'mask': [], 'timestamps': out_seq}
-                   }
+        metadata = {
+            "input": {"mask": [], "timestamps": in_seq},
+            "target": {"mask": [], "timestamps": out_seq},
+        }
 
-        t0=time.time()
+        t0 = time.time()
         input_data, metadata = self.load_in(in_seq, seq_r, metadata)
         output_data, metadata = self.load_out(out_seq, seq_r, metadata)
-        #if self.data_split == "training":
-        #    input_data, output_data, metadata = self.RandomRotate90(input_data, output_data, metadata, p=0.5)
-        #    input_data, output_data, metadata = self.HorizontalFlip(input_data, output_data, metadata, p=0.5)
-        #    input_data, output_data, metadata = self.TimeFlip(input_data, output_data, metadata, p=0.5)
-        #    #input_data = self.RandomChannelsCutOut(input_data, p=0.9)
-
-        if VERBOSE: print(time.time()-t0,"seconds")
+        if self.data_split == "training":
+            input_data, output_data, metadata = self.PolicyAug(input_data, output_data, metadata, p=0.8)
+        if VERBOSE:
+            print(time.time() - t0, "seconds")
         return input_data, output_data, metadata
 
     def __getitem__(self, idx):

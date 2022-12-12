@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 cdir=models/configurations/;
 sdirDef=submission.core;

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 cdir=models/configurations/;
 sdirDef=submission.heldout.transfer;
@@ -21,6 +21,7 @@ out=$sdir.zip;
 
 cat <<EOF
 $0 configuration:
+
   configBase:     ${cbase:-MISSING}
     in folder $cdir
 EOF
@@ -36,6 +37,7 @@ cat <<EOF
   submissionDir:  $sdir
   gpuID:          $gpu
   output:         $out
+
 EOF
 [ -f "$cpt" ] && ls -l "$cpt";
 
@@ -43,13 +45,16 @@ EOF
 if [ -z "$cpt" -o -n "$1" ]; then
     cat <<EOF
 usage:    $0 {configBase} {checkpoint} [submissionDir] [gpuID]
+
 	  The {configBase} file will be read from $cdir.
 	  Predictions will be collected in folder submissionDir.
 	  If not specified the default is: $sdirDef
 	  For stage-1 support set submissionDir to: submission
 	  The default gpuID is $gpuDef. Use a single GPU.
+
 Examples: $0  config_baseline_stage2-pred.yaml \\
 	      lightning_logs/YOURMODEL/checkpoints/YOURCHECK.ckpt
+
 EOF
     exit
 fi

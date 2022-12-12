@@ -1,11 +1,0 @@
---2022-11-14 16:39:06--  https://www.iarai.ac.at/weather4cast/?brand=w4c22
-Resolving www.iarai.ac.at (www.iarai.ac.at)... 193.170.51.162
-Connecting to www.iarai.ac.at (www.iarai.ac.at)|193.170.51.162|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: unspecified [text/html]
-Saving to: 'index.html?brand=w4c22'
-
-index.html?brand=w4     [<=>                 ]       0  --.-KB/s               index.html?brand=w4     [ <=>                ]  13.95K  49.6KB/s               index.html?brand=w4     [  <=>               ]  32.12K  57.1KB/s               index.html?brand=w4     [   <=>              ]  49.81K  88.5KB/s    in 0.6s    
-
-2022-11-14 16:39:08 (88.5 KB/s) - 'index.html?brand=w4c22' saved [51001]
-

@@ -29,8 +29,8 @@ import torch.nn.functional as F
 from utils.evaluate import *
 import numpy as np;
 
-#models
 from models.baseline_UNET3D import UNet as Base_UNET3D # 3_3_2 model selection
+from models.SIANet import sianet
 
 VERBOSE = False
 # VERBOSE = True
@@ -43,13 +43,13 @@ class UNet_Lightning(pl.LightningModule):
         self.in_channels = params['in_channels']
         self.start_filts = params['init_filter_size']
         self.dropout_rate = params['dropout_rate']
-        self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
+        #self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
+        self.model = sianet(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
         self.sigmoid = nn.Sigmoid()
-
         self.save_hyperparameters()
         self.params = params
         #self.example_input_array = np.zeros((44,252,252))
-        self.idx = 0 
+        
         self.val_batch = 0
         
         self.prec = 7
@@ -89,8 +89,6 @@ class UNet_Lightning(pl.LightningModule):
         
     def forward(self, x):
         x = self.model(x)
-        #if self.loss =='BCELoss':
-        #x = self.relu(x)
         return x
 
     def retrieve_only_valid_pixels(self, x, m):
@@ -162,20 +160,20 @@ class UNet_Lightning(pl.LightningModule):
             y_hat[mask]=0
             y[mask]=0
             
-        #recall, precision, F1, acc, csi = recall_precision_f1_acc(y, y_hat)
-        #iou = iou_class(y_hat, y)
+        recall, precision, F1, acc, csi = recall_precision_f1_acc(y, y_hat)
+        iou = iou_class(y_hat, y)
 
         #LOGGING
         self.log(f'{phase}_loss', loss, batch_size=self.bs, sync_dist=True)
-        values = {'val_acc': 0, 'val_recall': 0,
-                  'val_precision': 0, 'val_F1': 0, 'val_iou': 0,
-                  'val_CSI': 0
+        values = {'val_acc': acc, 'val_recall': recall,
+                  'val_precision': precision, 'val_F1': F1, 'val_iou': iou,
+                  'val_CSI': csi
 #                  , 'val_N': float(x.shape[0])
                   }
         self.log_dict(values, batch_size=self.bs, sync_dist=True)
     
         return {'loss': loss.cpu(), 'N': x.shape[0],
-                'iou': 0}
+                'iou': iou}
 
     def validation_epoch_end(self, outputs, phase='val'):
         print("Validation epoch end average over batches: ",
@@ -192,49 +190,30 @@ class UNet_Lightning(pl.LightningModule):
 
     def test_step(self, batch, batch_idx, phase='test'):
         x, y, metadata = batch
-        x2 = torch.rot90(x, 1,[3,4]) # up
-        x5 = torch.flip(x, [3,4])
-
-        xx = x[:,4,:,:,:]
-        xx = xx.cpu().numpy()
-        path222 = './xx_'+str(self.idx)
-        np.save(path222,xx)
+        if VERBOSE:
+            print('x', x.shape, 'y', y.shape, '----------------- batch')
         y_hat = self.forward(x)
-        y_hat2 =  self.forward(x2)
-        y_hat5 =  self.forward(x5)
-
-        y_hat_sig = self.sigmoid(y_hat)
-        y_hat5_sig = self.sigmoid(y_hat5)
-
-        y_hat_sig = y_hat_sig.cpu().numpy()
-        y_hat5_sig = y_hat5_sig.cpu().numpy()
-        y_sig = y.cpu().numpy()
-
-        path1 = './ori_'+str(self.idx)
-        path2 = './flip_'+str(self.idx)
-        path3 = './y_0.2'+str(self.idx)
-
-        y_hat2 = torch.rot90(y_hat2, -1,[3,4])
-        y_hat5 = torch.flip(y_hat5, [3,4])
-        y_hat = (y_hat+y_hat5)/2.
-        y_hat2 = self.sigmoid(y_hat)
-        path = './ens_'+str(self.idx)
-        np.save(path, y_hat2.cpu().numpy())
-        np.save(path1, y_hat_sig)
-        np.save(path2, y_hat5_sig)
-        np.save(path3, y_sig)
-
-        self.idx +=1
-
-        idx_gt0 = self.sigmoid(y_hat)>=0.5
-        y_hat[idx_gt0] = 1
-        y_hat[~idx_gt0] = 0
+        mask = self.get_target_mask(metadata)
+        if VERBOSE:
+            print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
+        loss = self._compute_loss(y_hat, y, mask=mask)
+        ## todo: add the same plot as in `test_step`
+        if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
+            print("applying thresholds to y_hat logits")
+            # set the logits threshold equivalent to sigmoid(x)>=0.5
+            idx_gt0 = y_hat>=0
+            y_hat[idx_gt0] = 1
+            y_hat[~idx_gt0] = 0
+        
+        if mask is not None:
+            y_hat[mask]=0
+            y[mask]=0
 
         recall, precision, F1, acc, csi = recall_precision_f1_acc(y, y_hat)
         iou = iou_class(y_hat, y)
 
         #LOGGING
-        self.log(f'{phase}_loss', 1, batch_size=self.bs, sync_dist=True)
+        self.log(f'{phase}_loss', loss, batch_size=self.bs, sync_dist=True)
         values = {'test_acc': acc, 'test_recall': recall, 'test_precision': precision, 'test_F1': F1, 'test_iou': iou, 'test_CSI': csi}
         self.log_dict(values, batch_size=self.bs, sync_dist=True)
         
@@ -242,48 +221,16 @@ class UNet_Lightning(pl.LightningModule):
 
     def predict_step(self, batch, batch_idx, phase='predict'):
         x, y, metadata = batch
-        #x2 = torch.rot90(x, 1,[3,4]) # up
-        #x3 = torch.rot90(x, 2,[3,4]) # down
-        #x4 = torch.rot90(x, 3,[3,4])
-        x5 = torch.flip(x, [3,4])
-        #x6 = torch.flip(x2, [3,4])
-        #x7 = torch.flip(x3, [3,4])
-        #x8 = torch.flip(x4, [3,4])
-
-
         y_hat = self.model(x)
-        #y_hat2 =  self.model(x2)
-        #y_hat3 =  self.model(x3)
-        #y_hat4 =  self.model(x4)
-        y_hat5 =  self.model(x5)
-        #y_hat6 =  self.model(x6)
-        #y_hat7 =  self.model(x7)
-        #y_hat8 =  self.model(x8)
-
-
-        #y_hat2 = torch.rot90(y_hat2, -1,[3,4])
-        #y_hat3 = torch.rot90(y_hat3, -2,[3,4])
-        #y_hat4 = torch.rot90(y_hat4, -3,[3,4])
-
-        y_hat5 = torch.flip(y_hat5, [3,4])
-        #y_hat6 = torch.flip(y_hat6, [3,4])
-        #y_hat7 = torch.flip(y_hat7, [3,4])
-        #y_hat8 = torch.flip(y_hat8, [3,4])
-
-        #y_hat6 = torch.rot90(y_hat6, -1,[3,4])
-        #y_hat7 = torch.rot90(y_hat7, -2,[3,4])
-        #y_hat8 = torch.rot90(y_hat8, -3,[3,4])
-
-        #if VERBOSE:
-        #    print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
-        #if self.loss=="BCEWithLogitsLoss":
-        #    print("applying thresholds to y_hat logits")
-        #    # set the logits threshold equivalent to sigmoid(x)>=0.5
-        y_hat = (y_hat+y_hat5)/2.
-        
-        idx_gt0 = self.sigmoid(y_hat)>=0.48
-        y_hat[idx_gt0] = 1
-        y_hat[~idx_gt0] = 0
+        mask = self.get_target_mask(metadata)
+        if VERBOSE:
+            print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
+        if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
+            print("applying thresholds to y_hat logits")
+            # set the logits threshold equivalent to sigmoid(x)>=0.5
+            idx_gt0 = y_hat>=0
+            y_hat[idx_gt0] = 1
+            y_hat[~idx_gt0] = 0
         return y_hat
 
     def configure_optimizers(self):

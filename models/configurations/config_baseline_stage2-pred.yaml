@@ -105,7 +105,7 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 4 # 40
+  batch_size: 16 # 40
   max_epochs: 90
   n_workers: 8  # 16
   loss: BCEWithLogitsLoss # requires pos_weight to be set
@@ -115,7 +115,7 @@ train:    # model training settings
   patience: 20
   lr: 1e-4
   weight_decay: 2e-2 
-  init_filter_size: 64
+  init_filter_size: 32
   dropout_rate: 0.4
 
 model:    # model definition settings
