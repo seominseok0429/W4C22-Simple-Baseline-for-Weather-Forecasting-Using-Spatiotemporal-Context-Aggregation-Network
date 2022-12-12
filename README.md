@@ -220,28 +220,18 @@ We will notify participants of how to provide their scientific abstract. For the
 
 When using or referencing the Weather4cast Competition in general or the competition data please cite: 
 ```
-@INPROCEEDINGS{9672063,  
-author={Herruzo, Pedro and Gruca, Aleksandra and Lliso, Llorenç and Calbet, Xavier and Rípodas, Pilar and Hochreiter, Sepp and Kopp, Michael and Kreil, David P.},  
-booktitle={2021 IEEE International Conference on Big Data (Big Data)},   
-title={High-resolution multi-channel weather forecasting – First insights on transfer learning from the Weather4cast Competitions 2021},   
-year={2021},  
-volume={},  
-number={},  
-pages={5750-5757},  
-doi={10.1109/BigData52589.2021.9672063}
+@article{seo2022domain,
+  title={Domain Generalization Strategy to Train Classifiers Robust to Spatial-Temporal Shift},
+  author={Seo, Minseok and Kim, Doyi and Shin, Seungheon and Kim, Eunbin and Ahn, Sewoong and Choi, Yeji},
+  journal={arXiv preprint arXiv:2212.02968},
+  year={2022}
 }
 
-@inbook{10.1145/3459637.3482044,
-author = {Gruca, Aleksandra and Herruzo, Pedro and R\'{\i}podas, Pilar and Kucik, Andrzej and Briese, Christian and Kopp, Michael K. and Hochreiter, Sepp and Ghamisi, Pedram and Kreil, David P.},
-title = {CDCEO'21 - First Workshop on Complex Data Challenges in Earth Observation},
-year = {2021},
-isbn = {9781450384469},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3459637.3482044},
-booktitle = {Proceedings of the 30th ACM International Conference on Information &amp; Knowledge Management},
-pages = {4878–4879},
-numpages = {2}
+@article{seo2022simple,
+  title={Simple Baseline for Weather Forecasting Using Spatiotemporal Context Aggregation Network},
+  author={Seo, Minseok and Kim, Doyi and Shin, Seungheon and Kim, Eunbin and Ahn, Sewoong and Choi, Yeji},
+  journal={arXiv preprint arXiv:2212.02952},
+  year={2022}
 }
 ```
 
