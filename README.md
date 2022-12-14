@@ -1,5 +1,3 @@
-![Title]("/sianet.png")
-
 # [Weather4cast](https://www.iarai.ac.at/weather4cast/)  - Super-Resolution Rain Movie Prediction under Spatio-Temporal Shifts
 - Predict super-resolution rain movies  in various regions of Europe
 - Transfer learning across space and time under strong shifts
@@ -79,41 +77,6 @@ For submissions you need to upload a ZIP format archive of HDF-5 files that foll
     +-- boxi_0015.pred.h5.gz  
     +-- boxi_00XX….
 ```
-
-## Starter kit
-This repository provides a starter kit accompanying the Weather4cast 2022 competition that includes example code to get you up to speed quickly. Please note that its use is entirely optional. The sample code includes a dataloader, some helper scripts, and a Unet-3D baseline model, some parameters of which can be set in a configuration file.
-
-To obtain the baseline model, you will need the `wget` command installed - then you can run
-```
-./mk_baseline.sh
-```
-to fetch and patch a basic 3D U-Net baseline model.
-
-You will need to download the competition data separately. The sample code assumes that the downloaded data are organized in the following folder structure (shown here for Stage-1 data, conversely for Stage-2):
-
-```
-+-- data
-    +-- 2019 –
-        +-- HRIT --
-            +-- boxi_0015.test.reflbt0.ns.h5
-            +-- boxi_0015.train.reflbt0.ns.h5
-            +-- boxi_0015.val.reflbt0.ns.h5
-            +-- boxi_0034.test.reflbt0.ns.h5
-            +-- boxi_0034.train.reflbt0.ns.h5
-            +-- boxi_0034.val.reflbt0.ns.h5
-            +-- boxi_0076.test.reflbt0.ns.h5
-            +-- boxi_0076.train.reflbt0.ns.h5
-            +-- boxi_0076.val.reflbt0.ns.h5
-        +-- OPERA -- 
-            +-- boxi_0015.train.rates.crop.h5
-            +-- boxi_0015.val.rates.crop.h5
-            +-- boxi_0034.train.rates.crop.h5
-            +-- boxi_0034.val.rates.crop.h5
-            +-- boxi_0076.train.rates.crop.h5
-            +-- boxi_0076.val.rates.crop.h5
-```
-
-The path to the parent folder `data` needs to be provided as the `data_root` parameter in the `config_baseline.yaml` file.
 
 
 ### Training
