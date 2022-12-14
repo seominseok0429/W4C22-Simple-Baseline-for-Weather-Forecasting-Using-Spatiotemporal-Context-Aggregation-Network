@@ -174,33 +174,6 @@ Training will create logs and checkpoint files that are saved in the `lightning_
 python train.py --gpus 0 1 --mode val  --config_path config_baseline.yaml  --checkpoint "lightning_logs/PATH-TO-YOUR-MODEL-LOGS/checkpoints/YOUR-CHECKPOINT-FILENAME.ckpt" --name baseline_validate
 ```
 
-### TensorBoard
-You can of course also use [TensorBoard](https://www.tensorflow.org/tensorboard) to track and visualize model evaluation metrics during the training process.
-The standard TensorBoard command line is:
-```
-tensorboard --logdir ./lightning_logs
-```
-This should confirm that TensorBoard has started. For the default port, you point your browser to http://localhost:6006.
-
-### Generating a submission
-Submission files can be generated from a trained model based on the model paramters saved in the checkpoint file. To generate predictions from your model checkpoint you can run the `train.py` script as below:
-```
-train.py --gpus 0 --mode predict --config_path config_baseline.yaml --checkpoint "lightning_logs/PATH-TO-YOUR-MODEL-LOGS/checkpoints/YOUR-CHECKPOINT-FILENAME.ckpt"
-```
-The code currently does not support generating a prediction for more than one region/year at a time.
-
-The results are saved in a single HDF-5 file named `boxi_00XX.pred.h5` in the `./submssion/YEAR/` folder, where *boxi_00XX* is the name of the region defined in the *predict* section your config file. A sample configuration is shown below:
-```
-predict:
-  region_to_predict: boxi_0015
-  year_to_predict: 2019
-```
-To generate predictions for multiple regions this needs to be run with a separate configuration file for each region.  
-
-After generating prediction files for all the regions, please pack them into a single ZIP file (keeping the `year/` folder structure) and submit them to the [respective Weather4cast leaderboards](https://www.iarai.ac.at/weather4cast/challenge/).
-
-
-
 ## Citation
 
 When using or referencing the Weather4cast Competition in general or the competition data please cite: 
