@@ -115,23 +115,6 @@ You will need to download the competition data separately. The sample code assum
 
 The path to the parent folder `data` needs to be provided as the `data_root` parameter in the `config_baseline.yaml` file.
 
-### Environment
-We provide Conda environments for the sample code which can be recreated locally. An environment with libraries current at release can be recreated from the file `w4cNew.yml`using the following command:
-```
-conda env create -f w4cNew.yml
-```
-If you want to use older libraries for compatibility reasons, we also provide an earlier environment in `w4c.yml`. Finally, if you want to create an environment in the future, we also provide a script `mk_env.sh` to get you started.
-Note that all this can easily run for an hour or more, depending on your machine and setup.
-
-To activate the environment please run
-```
-conda activate w4cNew
-```
-or
-```
-conda activate w4c
-```
-respectively.
 
 ### Training
 
