@@ -199,23 +199,6 @@ To generate predictions for multiple regions this needs to be run with a separat
 
 After generating prediction files for all the regions, please pack them into a single ZIP file (keeping the `year/` folder structure) and submit them to the [respective Weather4cast leaderboards](https://www.iarai.ac.at/weather4cast/challenge/).
 
-### Automated generation of submissions (helper scripts)
-Considering the much increased number of individual predictions to collect for a leaderboard submission in Stage-2, we now provide helper scripts `mk_pred_core.sh` and `./mk_pred_transfer.sh` that can be used to generate and compile all individual predictions from a single model. The scripts display help text and diagnostics. Note that the use of these scripts is entirely optional because you may prefer to apply different models for different regions. You can provide both an output directory and a GPU ID to generate multiple predictions in parallel. The script will typically run for 20-40 minutes on a recent GPU system.
-
-Example invocation for interactive use:
-```
-./mk_pred_core.sh config_baseline_stage2-pred.yaml 'lightning_logs/yourModelName/checkpoints/yourCheckPointName.ckpt' yourSubmissionName 0 2>&1 | tee yourSubmission.core.log
-```
-
-## Code and Scientific Abstract
-At the end of the competition paricpants are required to provide:
-1. A short scientific paper (Scientific Abstract) with a sufficiently detailed description of your approach (4-6 pages plus references)
-2. The code and models with their learned weights that you used for your predictions, with explanations of how to reproduce you submissions.
-  
-We will notify participants of how to provide their scientific abstract. For the code, you will need to submit it to a public repository like GitHub, providing a link to download the model's learned weights. Ideally, your repository should at least contain:
-- a) A list of **dependencies**. In the case of using Python, we suggest using conda/pip to generate them: `conda env export > environment.yml`. Make sure that your code can be executed from a fresh environment using the provided list of requirements: `conda env create -f environment.yml`.
-- b) **Code**, **models**, and a **folder with all model weights**.
-- c) An **out-of-the-box script** to use your best model **to generate predictions**. The script will read the inputs for the model from a given path and region, using its test folder (like the one used for the leaderboard), and save the outputs on a given path. The path to the folder containing the weights to be loaded by the models can also be an argument of the script. 
 
 
 ## Citation
