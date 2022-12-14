@@ -236,10 +236,3 @@ When using or referencing the Weather4cast Competition in general or the competi
   year={2022}
 }
 ```
-
-## Credits
-The competition is organized / supported by:
-- [Institute of Advanced Research in Artificial Intelligence, Austria](https://iarai.ac.at)
-- [Silesian University of Technology, Poland](https://polsl.pl)
-- [European Space Agency Φ-lab, Italy](https://philab.phi.esa.int/)
-- [Spanish State Meteorological Agency, AEMET, Spain](http://aemet.es/)
