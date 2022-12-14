@@ -66,8 +66,7 @@ Both input satellite radiances and output OPERA ground-radar rain rates are give
 ![Context](/images/opera_satelite_context_explained.png?raw=true "Weather4cast competition")
 
 - Stage-2 Competition: [Join and get the data](https://www.iarai.ac.at/weather4cast/get-data-2022/)
-## Submission guide
-For submissions you need to upload a ZIP format archive of HDF-5 files that follows the folder structure below. Optionally, each HDF-5 file can be compressed by gzip, allowing for simple parallelization of the compression step. You need to include model predictions for all the regions. For each region, an HDF file should provide *submission*, a tensor of type `float32` and shape `(60, 1, 32, 252, 252)`, representing your predictions for the 60 test samples of a region. You need to follow the file naming convention shown in the example below to indicate the target region. Predictions for different years need to be placed in separate folders as shown below. The folder structure must be preserved in the submitted ZIP file. Please note that for Stage 1 we only ask for predictions for the year 2019, and predictions are simply 1 or 0 to indicate *rain* or *no rain* events respectively. For the Stage 2 Core Challenge, we ask for predictions for a total of 7 regions in both 2019 and 2020. For the Stage 2 Transfer Learning Challenge, predictions for 3 regions are required in years 2019 and 2020, and for all 10 regions in 2021. To simplify compilation of predictions, we now provide helper scripts in the Starter Kit.
+
 
 ```
 +-- 2019 –
