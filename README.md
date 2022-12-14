@@ -1,7 +1,5 @@
 ![Title](/images/weather4cast_v1000-26.png?raw=true "Weather4cast competition")
 
-### If you have difficulty interpreting the code or have difficulties, please feel free to contact us. I will do my best to help.
-
 # [Weather4cast](https://www.iarai.ac.at/weather4cast/)  - Super-Resolution Rain Movie Prediction under Spatio-Temporal Shifts
 - Predict super-resolution rain movies  in various regions of Europe
 - Transfer learning across space and time under strong shifts
